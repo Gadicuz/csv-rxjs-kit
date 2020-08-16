@@ -3,10 +3,9 @@
 A toolkit of RxJS operators to handle CSV formatted data ([RFC 4180](https://tools.ietf.org/html/rfc4180)).
 
 [![Build Status](https://travis-ci.com/Gadicuz/csv-rxjs-kit.svg?branch=master)](https://travis-ci.com/Gadicuz/csv-rxjs-kit)
-[![Version](https://img.shields.io/github/package-json/v/gadicuz/csv-rxjs-kit)](https://github.com/gadicuz/csv-rxjs-kit)
-[![RxJS](https://img.shields.io/github/package-json/dependency-version/gadicuz/csv-rxjs-kit/rxjs)](https://github.com/gadicuz/csv-rxjs-kit)
-[![Top Language](https://img.shields.io/github/languages/top/gadicuz/csv-rxjs-kit)](https://github.com/gadicuz/csv-rxjs-kit)
+[![npm](https://img.shields.io/npm/v/csv-rxjs-kit)](https://www.npmjs.com/package/csv-rxjs-kit)
 [![Code Size](https://img.shields.io/github/languages/code-size/gadicuz/csv-rxjs-kit)](https://github.com/gadicuz/csv-rxjs-kit)
+[![Top Language](https://img.shields.io/github/languages/top/gadicuz/csv-rxjs-kit)](https://github.com/gadicuz/csv-rxjs-kit)
 [![MIT License](https://img.shields.io/github/license/gadicuz/csv-rxjs-kit)](https://github.com/Gadicuz/csv-rxjs-kit/blob/master/LICENSE)
 
 
