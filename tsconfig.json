@@ -1,0 +1,25 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ES6",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "lib": ["ES2017"],
+    "inlineSourceMap": true,
+    "declaration": true,
+    "importHelpers": true,
+    "outDir": "lib",
+    "rootDir": "src",
+    "strict": true,
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "lib",
+    "node_modules",
+    "**/node_modules/*",
+    "**/__tests__/*"
+  ]
+}
