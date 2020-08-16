@@ -34,7 +34,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint",
-    "test": "jest --config jestconfig.json"
+    "test": "jest",
   },
   "peerDependencies": {
     "rxjs": "^6.6.2"
