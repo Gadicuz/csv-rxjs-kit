@@ -4,3 +4,9 @@ node_js:
 
 before_install:
  - npm install rxjs@^6.6.2 
+
+script:
+ - npm run test:coveralls
+
+notifications:
+  email: false  
