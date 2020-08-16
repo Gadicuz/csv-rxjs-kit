@@ -1,6 +1,6 @@
 {
   "name": "csv-rxjs-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A kit of RxJS operators to handle CSV formatted (RFC 4180, MIME Type 'text/csv') data.",
   "author": "",
   "keywords": [
