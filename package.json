@@ -36,9 +36,8 @@
     "lint": "eslint",
     "test": "jest --config jestconfig.json"
   },
-  "dependencies": {
-    "rxjs": "^6.6.2",
-    "tslib": "^2.0.1"
+  "peerDependencies": {
+    "rxjs": "^6.6.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
