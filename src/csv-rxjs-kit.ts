@@ -73,14 +73,17 @@ export function csvStringify(opt?: {
 export function csvParse(): OperatorFunction<string, csvRecord> {
   return function (csv$: Observable<string>): Observable<csvRecord> {
     return new Observable((observer) => {
+      // csv$.subscribe() call wraps argument object with a Subscriber and a SafeSubscriber<>,
+      // observer is an Subscriver<>. Thay are implementing the RxJS contract:
+      //   - no calls after complete()/error()
+      //   - auto unsubscribe() on complete()/error()
       type S =
         | 'IDLE' // start of a line
         | 'COMMA' // right after ','
         | 'CR' // right after <CR>
         | 'TEXT' // inside non-escaped text
         | 'ESCAPED' // inside escaped text
-        | 'CLOSED' // after '"' inside escaped text
-        | undefined; // observable closed, no more activity
+        | 'CLOSED'; // after '"' inside escaped text
       const R = new RegExp(/,|"|\n|\r\n|\r|[^,"\r\n]+/y);
       let state: S = 'IDLE';
       let r: csvRecord = [];
@@ -89,15 +92,13 @@ export function csvParse(): OperatorFunction<string, csvRecord> {
       let cIndex = 1;
       let lastToken = '';
       function err(msg: string): void {
-        state = undefined;
         observer.error(new SyntaxError(`CSV4180 [${rIndex}, ${cIndex}]: ` + msg));
       }
       function next(): void {
         observer.next(r);
         r = [];
       }
-      function fsm(s: string | undefined): boolean {
-        if (s === undefined) return false;
+      function txt(s: string): boolean {
         switch (state) {
           case 'IDLE':
           case 'CR':
@@ -118,8 +119,6 @@ export function csvParse(): OperatorFunction<string, csvRecord> {
                 if (state === 'CR') state = 'IDLE';
                 else next();
                 break;
-              case '':
-                break;
               default:
                 v += s;
                 state = 'TEXT';
@@ -137,7 +136,6 @@ export function csvParse(): OperatorFunction<string, csvRecord> {
               case '\r':
               case '\r\n':
               case '\n':
-              case '':
                 r.push('');
                 next();
                 state = s === '\r' ? 'CR' : 'IDLE';
@@ -161,7 +159,6 @@ export function csvParse(): OperatorFunction<string, csvRecord> {
               case '\r':
               case '\r\n':
               case '\n':
-              case '':
                 r.push(v);
                 v = '';
                 next();
@@ -174,10 +171,7 @@ export function csvParse(): OperatorFunction<string, csvRecord> {
             break;
           case 'ESCAPED':
             if (s === '"') state = 'CLOSED';
-            else if (s === '') {
-              err('Closing quote is missing.');
-              return false;
-            } else v += s;
+            else v += s;
             break;
           case 'CLOSED':
             switch (s) {
@@ -193,7 +187,6 @@ export function csvParse(): OperatorFunction<string, csvRecord> {
               case '\r':
               case '\r\n':
               case '\n':
-              case '':
                 r.push(v);
                 v = '';
                 next();
@@ -214,18 +207,24 @@ export function csvParse(): OperatorFunction<string, csvRecord> {
         lastToken = s;
         return true;
       }
+      function end(): boolean {
+        if (state === 'ESCAPED') {
+          err('Closing quote is missing.');
+          return false;
+        }
+        if (state === 'COMMA' || state === 'TEXT' || state === 'CLOSED') {
+          r.push(v);
+          next();
+        }
+        return true;
+      }
       return csv$.subscribe({
-        next(chunk: string): void {
-          if (state) while (fsm(R.exec(chunk)?.[0]));
+        next: (chunk) => {
+          let m: string | undefined;
+          while ((m = R.exec(chunk)?.[0]) && txt(m));
         },
-        complete(): void {
-          if (state && fsm('')) observer.complete();
-          state = undefined;
-        },
-        error(e: unknown): void {
-          if (state) observer.error(e);
-          state = undefined;
-        },
+        complete: () => end() && observer.complete(),
+        error: (e) => observer.error(e),
       });
     });
   };
