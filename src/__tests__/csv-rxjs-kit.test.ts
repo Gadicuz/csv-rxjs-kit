@@ -13,6 +13,7 @@ import {
   csvDropEmpty,
   csvValidateRecord,
   csvRecordsJustifier,
+  csvDataConverter,
 } from '../csv-rxjs-kit';
 
 const sample1 = `aaa,bbb,ccc,ddd\u{D}
@@ -86,6 +87,37 @@ test('Parser test', (done) => {
       csvParse(),
       toArray(),
       tap((result) => expect(result).toStrictEqual(data1))
+    ),
+    of('bad"quote\n').pipe(
+      csvParse(),
+      catchError((e) => {
+        expect(e).toStrictEqual(SyntaxError('CSV4180 [1, 4]: Quote in non-escaped data.'));
+        return of(undefined);
+      })
+    ),
+    of('"missing quote\n').pipe(
+      csvParse(),
+      catchError((e) => {
+        expect(e).toStrictEqual(SyntaxError('CSV4180 [2, 1]: Closing quote is missing.'));
+        return of(undefined);
+      })
+    ),
+    of('"invalid"escape\n').pipe(
+      csvParse(),
+      catchError((e) => {
+        expect(e).toStrictEqual(SyntaxError('CSV4180 [1, 10]: Invalid escape sequence.'));
+        return of(undefined);
+      })
+    ),
+    of(undefined).pipe(
+      map(() => {
+        throw 'no data';
+      }),
+      csvParse(),
+      catchError((e) => {
+        expect(e).toStrictEqual('no data');
+        return of(undefined);
+      })
     )
   ).subscribe({ complete: () => void done() });
 });
@@ -150,11 +182,19 @@ test('Validator test', (done) => {
       csvStringify({ delimiter: '\n' }),
       reduce((csv, line) => csv + line, ''),
       tap((result) => expect(result).toStrictEqual(verify2))
+    ),
+    from(['a,b,c', 'd,e', 'f,g,h,i'].map((r) => r.split(','))).pipe(
+      csvValidateRecord(false, csvRecordsJustifier({ length: 2, repair: true })),
+      csvDropEmpty(),
+      toArray(),
+      tap((result) => expect(result).toStrictEqual([['d', 'e']]))
     )
   ).subscribe({ complete: () => void done() });
 });
 
 test('Converter test', (done) => {
+  const invalidConverter = (undefined as unknown) as csvDataConverter<unknown, unknown>;
+  expect(() => csvConvert(true, invalidConverter)).toThrowError(RangeError('Data converter is not provided.'));
   concat(
     from(cnvA)
       .pipe(
@@ -170,6 +210,22 @@ test('Converter test', (done) => {
         csvStringify({ delimiter: '\n' }),
         reduce((csv, line) => csv + line, ''),
         tap((result) => expect(result).toStrictEqual(cnvB))
-      )
+      ),
+    from([['field'], ['a', 'b', 'c']]).pipe(
+      csvConvert(
+        true,
+        csvObjAssembler((i) => `f${i}`)
+      ),
+      csvDropHeader(),
+      tap((result) => expect(result).toStrictEqual({ field: 'a', f1: 'b', f2: 'c' }))
+    ),
+    of(['a', 'b', 'c']).pipe(
+      csvConvert(false, csvObjAssembler()),
+      tap((result) => expect(result).toStrictEqual({ _0: 'a', _1: 'b', _2: 'c' }))
+    ),
+    of({ a: 0, b: 'text', c: undefined }).pipe(
+      csvConvert(false, csvObjValuesGetter(true)),
+      tap((result) => expect(result).toStrictEqual(['0', 'text', '']))
+    )
   ).subscribe({ complete: () => void done() });
 });
