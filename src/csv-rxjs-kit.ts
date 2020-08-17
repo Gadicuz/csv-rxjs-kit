@@ -27,19 +27,11 @@ export type csvDataConverter<T, R> = (src: T, names?: string[]) => R;
  */
 export type csvRecordValidator = (rec: csvRecord, isHeader: boolean) => csvRecord;
 
-/**
- * Field names extractor funcion type.
- * @typeParam T - object type
- * @param obj - object to exctract names
- * @returns field names
- */
-export type csvHeaderExtractor<T> = (obj: T) => string[];
-
 /** Object builder function type. */
-export type csvObjectBuilder<T> = csvDataConverter<csvRecord, T>;
+export type csvBuilder<T> = csvDataConverter<csvRecord, T>;
 
 /** CSV-record extractor function type. */
-export type csvRecordExtractor<T> = csvDataConverter<T, csvRecord>;
+export type csvExtractor<T> = csvDataConverter<T, csvRecord>;
 
 /**
  * CSV formatter RxJS operator.
@@ -296,7 +288,7 @@ export function csvValidateRecord(hdr: boolean, validator: csvRecordValidator): 
  *
  * It doesn't matter if source Observable emits header record. The operator's conversion procedure doesn't affect a header record.
  *
- * If you need different behavior and/or have different input data type use `csvConvert()` and custom `csvRecordExtractor<T>`.
+ * If you need different behavior and/or have different input data type use `csvConvert()` and custom `csvExtractor<T>`.
  */
 export function csvFromArray(): OperatorFunction<unknown[], csvRecord> {
   return map((obj) => obj.map((v) => String(v ?? '')));
@@ -362,7 +354,7 @@ export function csvConvert<T, R>(
  *
  * @param opt - validation options
  */
-export function csvRecordsJustifier(opt?: {
+export function csvJustifier(opt?: {
   length?: number;
   skip_empty?: boolean;
   repair?: boolean;
@@ -390,7 +382,7 @@ export function csvRecordsJustifier(opt?: {
 /**
  * Creates an object upon `csvRecord`.
  *
- * Returns `csvObjectBuilder<Record<string, string>>` that creates an object using properties names array and `rec` data as values.
+ * Returns `csvBuilder<Record<string, string>>` that creates an object using properties names array and `rec` data as values.
  * Every data item in `csvRecords` is added to created object. Data item index is used to select property name in `names` array.
  * If no such name exists then argument `extra` is used to generate property name for index `i`.
  *
@@ -404,9 +396,7 @@ export function csvRecordsJustifier(opt?: {
  *
  * @param extra - property name generator for unlisted properties
  */
-export function csvObjAssembler(
-  extra?: string | ((index: number) => string)
-): csvObjectBuilder<Record<string, string>> {
+export function csvAssembler(extra?: string | ((index: number) => string)): csvBuilder<Record<string, string>> {
   const n =
     typeof extra === 'function'
       ? extra
@@ -420,23 +410,23 @@ export function csvObjAssembler(
 }
 
 /** Returns an array of alphabetically sorted enumerable properties of an object. */
-export function csvObjPropsGetter(): csvHeaderExtractor<Record<string, unknown>> {
-  return (obj: Record<string, unknown>) => Object.keys(obj).sort((a, b) => a.localeCompare(b));
+export function csvPropNames(obj: Record<string, unknown>): csvRecord {
+  return Object.keys(obj).sort((a, b) => a.localeCompare(b));
 }
 
 /**
  * Creates an CSV record upon object.
  *
- * Returns `csvRecordExtractor<Record<string, unknown>>` that creates an CSV record using properties names array and `obj` as values.
+ * Returns `csvExtractor<Record<string, unknown>>` that creates an CSV record using properties names array and `obj` as values.
  * Every listed on `names` property's value is received from `obj` and stored in the record. Undefined values replaced by `''`.
  * If `extra === true` all non listed object properties values are added to the record in alphabetical order after the listed ones.
  *
  * @param extra - add non listed properties values
  */
-export function csvObjValuesGetter(extra?: boolean): csvRecordExtractor<Record<string, unknown>> {
+export function csvPropValues(extra?: boolean): csvExtractor<Record<string, unknown>> {
   return (obj: Record<string, unknown>, names?: string[]) => {
     let listed = names || [];
-    if (extra) listed = listed.concat(csvObjPropsGetter()(obj).filter((k) => !listed.includes(k)));
+    if (extra) listed = listed.concat(csvPropNames(obj).filter((k) => !listed.includes(k)));
     return listed.map((k) => String(obj[k] ?? ''));
   };
 }

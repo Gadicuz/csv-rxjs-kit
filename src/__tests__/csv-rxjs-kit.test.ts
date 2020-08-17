@@ -5,14 +5,14 @@ import {
   csvParse,
   csvConvert,
   csvDropHeader,
-  csvObjAssembler,
+  csvAssembler,
   csvInjectHeader,
   csvStringify,
-  csvObjValuesGetter,
+  csvPropValues,
   csvFromArray,
   csvDropEmpty,
   csvValidateRecord,
-  csvRecordsJustifier,
+  csvJustifier,
   csvDataConverter,
 } from '../csv-rxjs-kit';
 
@@ -162,7 +162,7 @@ test('Validator test', (done) => {
   concat(
     from(data3).pipe(
       csvFromArray(),
-      csvValidateRecord(true, csvRecordsJustifier()),
+      csvValidateRecord(true, csvJustifier()),
       toArray(),
       catchError((e) => {
         expect(e).toStrictEqual(RangeError('Invalid record.'));
@@ -171,20 +171,20 @@ test('Validator test', (done) => {
     ),
     from(data3).pipe(
       csvFromArray(),
-      csvValidateRecord(false, csvRecordsJustifier({ length: 2, skip_empty: false, repair: true, filler: 'x' })),
+      csvValidateRecord(false, csvJustifier({ length: 2, skip_empty: false, repair: true, filler: 'x' })),
       csvStringify({ delimiter: '\n', last_break: true }),
       reduce((csv, line) => csv + line, ''),
       tap((result) => expect(result).toStrictEqual(verify1))
     ),
     from(data3.slice(0, 3)).pipe(
       csvFromArray(),
-      csvValidateRecord(true, csvRecordsJustifier({ length: 2, skip_empty: true, repair: true, filler: '' })),
+      csvValidateRecord(true, csvJustifier({ length: 2, skip_empty: true, repair: true, filler: '' })),
       csvStringify({ delimiter: '\n' }),
       reduce((csv, line) => csv + line, ''),
       tap((result) => expect(result).toStrictEqual(verify2))
     ),
     from(['a,b,c', 'd,e', 'f,g,h,i'].map((r) => r.split(','))).pipe(
-      csvValidateRecord(false, csvRecordsJustifier({ length: 2, repair: true })),
+      csvValidateRecord(false, csvJustifier({ length: 2, repair: true })),
       csvDropEmpty(),
       toArray(),
       tap((result) => expect(result).toStrictEqual([['d', 'e']]))
@@ -200,13 +200,13 @@ test('Converter test', (done) => {
       .pipe(
         csvParse(),
         csvInjectHeader(['name', 'p']),
-        csvConvert(true, csvObjAssembler('unk')),
+        csvConvert(true, csvAssembler('unk')),
         csvDropHeader(),
         map((o) => ({ ...o, total: Number(o.p) * Number(o['unk2']) }))
       )
       .pipe(
         csvInjectHeader(['total', 'name', 'owner']),
-        csvConvert(true, csvObjValuesGetter()),
+        csvConvert(true, csvPropValues()),
         csvStringify({ delimiter: '\n' }),
         reduce((csv, line) => csv + line, ''),
         tap((result) => expect(result).toStrictEqual(cnvB))
@@ -214,18 +214,18 @@ test('Converter test', (done) => {
     from([['field'], ['a', 'b', 'c']]).pipe(
       csvConvert(
         true,
-        csvObjAssembler((i) => `f${i}`)
+        csvAssembler((i) => `f${i}`)
       ),
       csvDropHeader(),
       tap((result) => expect(result).toStrictEqual({ field: 'a', f1: 'b', f2: 'c' }))
     ),
     of(['a', 'b', 'c']).pipe(
-      csvConvert(false, csvObjAssembler()),
+      csvConvert(false, csvAssembler()),
       tap((result) => expect(result).toStrictEqual({ _0: 'a', _1: 'b', _2: 'c' }))
     ),
-    of({ a: 0, b: 'text', c: undefined }).pipe(
-      csvConvert(false, csvObjValuesGetter(true)),
-      tap((result) => expect(result).toStrictEqual(['0', 'text', '']))
+    of({ t: 0, z: 'text', c: undefined }).pipe(
+      csvConvert(false, csvPropValues(true)),
+      tap((result) => expect(result).toStrictEqual(['', '0', 'text']))
     )
   ).subscribe({ complete: () => void done() });
 });
