@@ -32,7 +32,7 @@ npm i csv-rxjs-kit
 
 # Usage
 
-The package consists of several simple RxJS operators specific to CSV data processing (text parsing/generating, CSV header manipulation, CSV data records validation) and some helper functions.
+The package consists of several simple RxJS operators specific to CSV data processing (text parsing/generating, CSV header manipulation, CSV data records validation) and some utility functions.
 
 All those CSV operators are intended to combine with standard RxJS operators to build up required functionality.
 
@@ -45,7 +45,7 @@ type csvRecord = string[];
 
 The very first CSV record in a data stream might be a header record. The header record consists of field names (instead of field data) for the following CSV records. The header record can be used to construct Objects with well-named properties or (obviously) to create a CSV text file with a header. One can remove and add an arbitrary header to the data stream.
 
-Empty CSV records are prohibited in CSV files but operators __csvParse()__ and __csvStringify()__ allow them. If one needs to get rid of them after parsing or before stringify, they can use __csvDropEmpty()__ operator.
+Empty CSV records are prohibited in CSV files but operators `csvParse()` and `csvStringify()` allow them. If one needs to get rid of them after parsing or before stringify, they can use `csvDropEmpty()` operator.
 
 The package provides basic CSV records verification functionality. RFC 4180 requires all CSV records to be the same length. The validation ensures this and throws an error by default. There are options to change the default validation behaviour to erase, ignore or repair invalid records.
 
@@ -55,23 +55,34 @@ The package provides basic CSV records verification functionality. RFC 4180 requ
 The package provides several specific operators to produce, handle and consume CSV records.
 
 * Operators to produce CSV records:
-  * __csvParse()__ parses CSV formatted text
-  * __csvConvert()__ (with __csvRecordExtractor__) extracts data from Objects properties
-  * __csvFromArray()__ convert arrays of any data
+  * `csvParse()` parses CSV formatted text
+  * `csvConvert()` (with `csvExtractor` helper) extracts data from Object's properties
+  * `csvFromArray()` convert arrays of any data
 
 * Operators for CSV records conversion to other data formats:
-  * __csvStringify()__ produces CSV formatted text
-  * __csvConvert()__ (with __csvObjectBuilder__) creates Objects
+  * `csvStringify()` produces CSV formatted text
+  * `csvConvert()` (with `csvBuilder` helper) creates Objects
 
 * Operators to handle CSV records:
-  * __csvDropEmpty()__ removes empty records from the records stream
-  * __csvDropHeader()__ removes the header (first) record from the records stream
-  * __csvInjectHeader()__ insert a new header record to the data stream
-  * __csvValidateRecord()__ (with __csvRecordValidator__) validates (modifies) records
+  * `csvDropEmpty()` removes empty records from the records stream
+  * `csvDropHeader()` removes the header (first) record from the records stream
+  * `csvInjectHeader()` insert a new header record to the data stream
+  * `csvValidateRecord()` (with `csvRecordValidator` helper) validates (modifies) records
 
 Every CSV record is an array of strings so one can also use [standard RxJS operators](https://rxjs-dev.firebaseapp.com/operator-decision-tree) to process CSV records.
 
-The most dependent on RFC 4180 operators in the package are __csvParse()__ and __csvStringify()__. Other operators are intended to handle the CSV record stream and implement required application functionality. They can be replaced by combinations of standard RxJS operators.
+The most dependent on RFC 4180 operators in the package are `csvParse()` and `csvStringify()`. Other operators are intended to handle the CSV record stream and implement required application functionality. They can be replaced by combinations of standard RxJS operators.
+
+## Helper functions
+
+The package provides some functions to handle CSV records.
+
+* Validation functions:
+  * `csvJustifier()` returns helper function, that adjusts record's length or removes invalid records.
+* Processing functions:
+  * `csvPropNames()` returns Object's property names as a header record.
+  * `csvPropValues()` returns helper function, that creates a record for Object's properties values.
+  * `csvAssembler()` returns helper function, that creates an Object with properties initialized by a record's values.
 
 # Examples
 
@@ -84,7 +95,7 @@ const data$: Observable<string> = ...;
 data$.pipe(
   csvParse(), // convert to CSV records 
   csvDropEmpty(), // remove empty CSV records 
-  csvValidateRecord(true, csvRecordsJustifier()), // validate records
+  csvValidateRecord(true, csvJustifier()), // validate records
   csvConvert(true, csvObjAssemble()), // convert CSV record to object
   map((objects) => JSON.stringify(objects)) // generate CSV
 ) // <- Observable<string>, JSON formatted input CSV records
