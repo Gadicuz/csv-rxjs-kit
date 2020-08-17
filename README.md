@@ -96,8 +96,8 @@ data$.pipe(
   csvParse(), // convert to CSV records 
   csvDropEmpty(), // remove empty CSV records 
   csvValidateRecord(true, csvJustifier()), // validate records
-  csvConvert(true, csvObjAssemble()), // convert CSV record to object
-  map((objects) => JSON.stringify(objects)) // generate CSV
+  csvConvert(true, csvObjAssemble()), // convert CSV records to objects
+  map((objects) => JSON.stringify(objects)) // generate JSON
 ) // <- Observable<string>, JSON formatted input CSV records
 ```
 
