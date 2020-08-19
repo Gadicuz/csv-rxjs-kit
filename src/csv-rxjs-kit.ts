@@ -425,7 +425,7 @@ export function csvPropNames(obj: Record<string, unknown>): csvRecord {
 export function csvPropValues(extra?: boolean): csvExtractor<Record<string, unknown>> {
   return (obj: Record<string, unknown>, names?: string[]) => {
     let listed = names || [];
-    if (extra) listed = listed.concat(csvPropNames(obj).filter((k) => !listed.includes(k)));
+    if (extra) listed = listed.concat(csvPropNames(obj).filter((k) => listed.indexOf(k) < 0));
     return listed.map((k) => String(obj[k] ?? ''));
   };
 }
