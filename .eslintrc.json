@@ -16,7 +16,7 @@
     },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "project": "tsconfig.eslint.json",
+        "project": "tsconfig.json",
         "tsconfigRootDir": "."
     },
     "plugins": [
@@ -27,6 +27,16 @@
     ],
     "settings": {
     },
+    "ignorePatterns": ["/coverage", "/lib", "/node_modules"],
+    "overrides": [
+        {
+            "files": ["src/__tests__/*"],
+            "parserOptions": {
+                "project": "tsconfig.jest.json",
+                "tsconfigRootDir": "."
+            }
+        }
+    ],
     "rules": {
         "@typescript-eslint/camelcase": "off",
         "tsdoc/syntax": "warn",
