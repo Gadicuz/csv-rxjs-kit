@@ -1,3 +1,4 @@
+/* no tsconfig.json at design time available (default is used?), eslint is ok */
 import { of, from, concat } from 'rxjs';
 import { reduce, toArray, tap, map, catchError } from 'rxjs/operators';
 
@@ -14,7 +15,7 @@ import {
   csvValidateRecord,
   csvJustifier,
   csvDataConverter,
-} from '../csv-rxjs-kit';
+} from '../../lib/csv-rxjs-kit';
 
 const sample1 = `aaa,bbb,ccc,ddd\u{D}
 ,,,\u{D}
