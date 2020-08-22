@@ -24,16 +24,18 @@
   },
   "homepage": "https://github.com/Gadicuz/csv-rxjs-kit#readme",
   "files": [
-    "lib/**/*"
+    "esm",
+    "cjs"
   ],
   "type": "module",
-  "main": "./lib/csv-rxjs-kit.js",
-  "types": "./lib/csv-rxjs-kit.d.ts",
+  "main": "./cjs/csv-rxjs-kit.js",
+  "module": "./esm/csv-rxjs-kit.js",
+  "types": "./esm/csv-rxjs-kit.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc -p tsconfig.cjs.json",
     "lint": "eslint",
     "test": "jest",
     "test:coverage": "jest --coverage",

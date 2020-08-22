@@ -10,7 +10,7 @@
     "declaration": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "outDir": "lib",
+    "outDir": "esm",
     "noEmitOnError": true,
     "strict": true
   },
