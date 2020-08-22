@@ -15,7 +15,7 @@ import {
   csvValidateRecord,
   csvJustifier,
   csvDataConverter,
-} from '../../lib/csv-rxjs-kit';
+} from '../csv-rxjs-kit';
 
 const sample1 = `aaa,bbb,ccc,ddd\u{D}
 ,,,\u{D}
