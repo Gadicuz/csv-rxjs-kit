@@ -2,7 +2,7 @@
   "name": "csv-rxjs-kit",
   "version": "1.1.0",
   "description": "A kit of RxJS operators to handle CSV formatted (RFC 4180, MIME Type 'text/csv') data.",
-  "author": "",
+  "author": "Nikolay Postnikov <nick.postnikov@gmail.com>",
   "keywords": [
     "csv",
     "text/csv",
@@ -26,6 +26,7 @@
   "files": [
     "lib/**/*"
   ],
+  "type": "module",
   "main": "./lib/csv-rxjs-kit.js",
   "types": "./lib/csv-rxjs-kit.d.ts",
   "publishConfig": {
