@@ -6,7 +6,7 @@ A toolkit of RxJS operators to handle CSV formatted data ([RFC 4180](https://too
 [![Coverage Status](https://coveralls.io/repos/github/Gadicuz/csv-rxjs-kit/badge.svg?branch=master)](https://coveralls.io/github/Gadicuz/csv-rxjs-kit?branch=master)
 [![npm](https://img.shields.io/npm/v/csv-rxjs-kit)](https://www.npmjs.com/package/csv-rxjs-kit)
 [![rxjs](https://img.shields.io/github/package-json/dependency-version/gadicuz/csv-rxjs-kit/dev/rxjs)](https://www.npmjs.com/package/rxjs)
-[![Code Size](https://img.shields.io/github/languages/code-size/gadicuz/csv-rxjs-kit)](https://github.com/gadicuz/csv-rxjs-kit)
+[![npm bundle size](https://img.shields.io/bundlephobia/min/csv-rxjs-kit)](https://bundlephobia.com/result?p=csv-rxjs-kit)
 [![Top Language](https://img.shields.io/github/languages/top/gadicuz/csv-rxjs-kit)](https://github.com/gadicuz/csv-rxjs-kit)
 [![MIT License](https://img.shields.io/github/license/gadicuz/csv-rxjs-kit)](https://github.com/Gadicuz/csv-rxjs-kit/blob/master/LICENSE)
 
