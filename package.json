@@ -11,7 +11,7 @@
     "stringify",
     "rxjs",
     "observable",
-    "ECMAScript",
+    "ES6",
     "typescript"
   ],
   "license": "MIT",

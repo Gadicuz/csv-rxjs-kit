@@ -21,7 +21,7 @@ A toolkit of RxJS operators to handle CSV formatted data ([RFC 4180](https://too
 * Simple API (a handful of RxJS operators)
 * Modular design to perfectly fulfill custom requirements
 * Compatible with standard [RxJS 6](https://github.com/ReactiveX/rxjs/tree/6.x) data processing
-* ECMAScript module, typings available
+* ES6 module, typings available
 
 
 # Install
