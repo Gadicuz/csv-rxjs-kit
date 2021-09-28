@@ -42,7 +42,7 @@
     "test:coveralls": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "peerDependencies": {
-    "rxjs": "^6.6.2 ^7.0.0"
+    "rxjs": "^6.6.2 || ^7.0.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
